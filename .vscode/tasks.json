@@ -9,10 +9,12 @@
             "dependsOn": [
                 "Validate & install prerequisites",
                 "Install npm packages",
+                "Setup port forwarding",
                 "Set up tab",
                 "Set up SSO",
                 "Build & upload Teams manifest",
-                "Start services"
+                "Start services",
+                "Open Teams Web Client"
             ],
             "dependsOrder": "sequence"
         },
@@ -30,7 +32,7 @@
                     "portOccupancy" // Validate available ports to ensure those debug ones are not occupied.
                 ],
                 "portOccupancy": [
-                    53000 // tab service port
+                    3000 // tab service port
                 ]
             }
         },
@@ -52,13 +54,19 @@
             }
         },
         {
+            "label": "Setup port forwarding",
+            "type": "shell",
+            // Currently hardcoded to 3000. It is possible to dynamically retrieve it from config file in VSC extension
+            "command": "gh codespace ports visibility 3000:public -c $CODESPACE_NAME"
+        },
+        {
             // Prepare local launch information for Tab.
             // See https://aka.ms/teamsfx-debug-set-up-tab-task to know the details and how to customize the args.
             "label": "Set up tab",
             "type": "teamsfx",
             "command": "debug-set-up-tab",
             "args": {
-                "baseUrl": "https://localhost:53000"
+                "baseUrl": "https://localhost:3000"
             }
         },
         {
@@ -112,6 +120,14 @@
                     "beginsPattern": ".*",
                     "endsPattern": "Compiled|Failed|compiled|failed"
                 }
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Open Teams Web Client",
+            "command": "node ${workspaceFolder}/.fx/open-browser.js",
+            "options": {
+                "cwd": "${workspaceFolder}/tabs"
             }
         }
     ]
